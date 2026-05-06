@@ -7,4 +7,4 @@ name = "real-world-mapping-visualizer"
 version = "0.1.0"
 
 [tool.setuptools]
-packages = ["kernel", "kernel.interface"]
+packages = ["kernel", "kernel.interface", "companion_computer"]

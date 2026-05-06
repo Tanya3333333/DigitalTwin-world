@@ -28,7 +28,7 @@
                 "xyz": "0 0 -2",
                 "rpy-deg": "0 0 0"
             },
-            "capture-interval": 0.05,
+            "capture-interval": 0.0166666666667,
             "capture-settings": [{
                 "image-type": 0,
                 "width": 1456,

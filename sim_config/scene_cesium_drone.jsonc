@@ -22,6 +22,28 @@
     },
     "robot-config": "robot_target.jsonc",
     "start-landed": true 
+  }, 
+  
+  {
+    "type": "robot",
+    "name": "target2",
+    "origin": {
+      "xyz": "60 5 -5",
+      "rpy-deg": "0 0 0"
+    },
+    "robot-config": "robot_target2.jsonc",
+    "start-landed": true 
+  }, 
+  
+  {
+    "type": "robot",
+    "name": "target3",
+    "origin": {
+      "xyz": "60 10 -5",
+      "rpy-deg": "0 0 0"
+    },
+    "robot-config": "robot_target3.jsonc",
+    "start-landed": true 
   }
 
   ],

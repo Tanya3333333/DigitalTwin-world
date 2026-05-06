@@ -1,0 +1,20 @@
+{
+  "physics-type": "non-physics",
+
+  "links": [{
+        "name": "target3_drone_body",
+
+
+        "collision": {
+            "enabled": false
+        },
+
+        "visual": { 
+            "geometry": {
+                "type": "unreal_mesh",
+                "name": "/Game/drones/CAD_models/fixed_wing_fab_model/fixed_wing_military/StaticMeshes/fixed_wing_military.fixed_wing_military",
+                "scale": "0.001 0.001 0.001"
+            }
+        }
+    }]
+}

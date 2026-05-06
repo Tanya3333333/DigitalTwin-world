@@ -1,0 +1,20 @@
+{
+  "physics-type": "non-physics",
+
+  "links": [{
+        "name": "target2_drone_body",
+
+
+        "collision": {
+            "enabled": false
+        },
+
+        "visual": { 
+            "geometry": {
+                "type": "unreal_mesh",
+                "name": "/Drone/SimpleHexarotor",
+                "scale": "1.0 1.0 1.0"
+            }
+        }
+    }]
+}

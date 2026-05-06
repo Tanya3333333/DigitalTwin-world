@@ -2,7 +2,7 @@
   "physics-type": "non-physics",
 
   "links": [{
-        "name": "target_drone_body",
+        "name": "target1_drone_body",
 
 
         "collision": {
