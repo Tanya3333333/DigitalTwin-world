@@ -5,7 +5,9 @@
         "name": "interceptor_body",
 
         "collision": {
-            "enabled": false
+            "enabled": true,
+            "restitution": 0.1,
+            "friction": 0.5
         },
 
 
@@ -25,18 +27,18 @@
             "enabled": true,
             "parent-link": "interceptor_body",
             "origin": {
-                "xyz": "0 0 -2",
+                "xyz": "0 0 -0.5",
                 "rpy-deg": "0 0 0"
             },
-            "capture-interval": 0.0166666666667,
+            "capture-interval": 0.02,
             "capture-settings": [{
                 "image-type": 0,
-                "width": 1456,
-                "height": 1088,
+                "width": 640,
+                "height": 640,
                 "fov-degrees": 45,
                 "capture-enabled": true,
                 "streaming-enabled": false,
-                "pixels-as-float": true,
+                "pixels-as-float": false,
                 "compress": false
             }]
 

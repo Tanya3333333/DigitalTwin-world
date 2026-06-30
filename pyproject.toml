@@ -3,8 +3,12 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "real-world-mapping-visualizer"
+name = "DIGITALTWIN_WORLD"
 version = "0.1.0"
 
-[tool.setuptools]
-packages = ["kernel", "kernel.interface", "companion_computer"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kernel*", "companion_computer*"]
+
+[tool.setuptools.package-data]
+"companion_computer.track.yolo_models" = ["*.pt"]

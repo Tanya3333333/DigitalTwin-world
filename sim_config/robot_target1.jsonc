@@ -1,0 +1,22 @@
+{
+  "physics-type": "non-physics",
+
+  "links": [{
+        "name": "target1_drone_body",
+
+
+        "collision": {
+            "enabled": true,
+            "restitution": 0.1,
+            "friction": 0.5
+        },
+
+        "visual": { 
+            "geometry": {
+                "type": "unreal_mesh",
+                "name": "/Drone/SimpleHexarotor",
+                "scale": "1.0 1.0 1.0"
+            }
+        }
+    }]
+}

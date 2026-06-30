@@ -1,66 +1,80 @@
-## Notes
+### About this branch:
+This is the visualization sector of the SITL simulation environment that accepts the interceptor states, and generate target dynamics, while capturing camera to send it to YOLO models do Detection and Track. 
 
-### Project Airsim: 
+Goes in this branch: 
+Interceptor FDM states 
+
+Goes out the branch: 
+camera sensor output,
+dynamics and trajectory of target drones, 
+bounding boxes from the YOLO
+
+
+### Demo: 
+NA 
+
+
+### Requirments before doing the setup:
+1) Python 3.12 and C languages
+2) Visual Studio 2022
+3) VSCode --> for runing this repo
+4) Have a Windows OS and a Linux OS (if no native Linux, try WSL or VMWare) --> you need to clone this repo in both of these OSs and open it in VSCode
+5) Epic Games Launcher 
+6) check the "kernel/__init__.py" file to make sure the PCs' addresses are compatible with your workstations/OSs
+
+
+
+### Setup on Windows OS: 
+
+## Unreal Engine + Project Airsim
+1) Installed Unreal Engine 5.7 from Epic Games Launcher in (C:\Program Files\Epic Games): https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine 
+ 
+2) Install Cesium following this link up to step 4: https://cesium.com/learn/unreal/unreal-quickstart/ 
+    The location of cesium folder that needs to be downloaded should be here: C:\Program Files\Epic Games\UE_5.7\Engine\Plugins\Marketplace
+    
+3) Add 3d google map world: https://cesium.com/learn/unreal/unreal-photorealistic-3d-tiles/
+
+4) Clone modified project airsim repo on C drive (optimal performance): 
+
+    once cloned, open Blocks.sln with Visual Studio and set the Solution Configuration to [Development Editor] [Win64] 
+    Then do Ctril + F5 -- this will build and launch Unreal
+
+5) Once Unreal opened, go to Content Browser > Blocks > C++ classes > Public and then drag Actor_SetWorldOrigin to the viewport. 
+            
+6) Press play (the green button)
+
+## optional (if you want to drive the interceptor around)
+7) Go to the branch named and clone that in Ubuntu Environment: physic-source
+
+8) Make sure to run that branch's scheduler before runing the visual-source branch
+
+#[for more info go to the physic-branch]
+
+
+## Open this branch in VSCode  
+
+9) create a venv and activate: 
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+10) Other dependecies: 
+python -m pip install --upgrade pip 
+pip install -e client/python/projectairsim
+pip install -r requirements_win.txt
+
+11) run the scheduler to use the repo: 
+py -m kernel.scheduler  
+
+
+
+### Other notes
+# Project Airsim
 - The official stable release (v0.1.1) is distributed as a prebuilt Unreal environment.
 - There is no separate "stable source branch", but the prebuilt package is built from commit 9fe8d3a.
 - This project uses the SAME source commit (v0.1.1 / 9fe8d3a), assuming it is stable since it was used to create the official prebuilt release.
 - Instead of using the prebuilt binaries, we clone the source and build locally to allow customization.
 - The only customized part is the Blocks folder: C:\ProjectAirSim\unreal\Blocks
 
-### ProjectAirSim\unreal\Blocks:
-
+# ProjectAirSim\unreal\Blocks
 - The ProjectAirSim repository is based on v0.1.1 / commit 9fe8d3a. However, the Unreal Blocks folder was originally taken from an untracked main-branch state and was customized before the repository was reset/checked out to v0.1.1.
 - Because of this, the exact original commit for unreal/Blocks is unknown. The current Blocks folder should be treated as a custom local version, not a clean v0.1.1 copy.
-
-
-
-# Setup: 
-
-1) Install unreal engine 5.7 (put the location in local disk preferably) from EPIC Game Launcher: https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine
-
-2) Download the Cesium Ion: https://www.unrealengine.com/en-US/download  
-- Location of download (mandatory step to get plugins readable): C:\Program Files\Epic Games\UE_5.7\Engine\Plugins\Marketplace)
-
-3) Use CfAR Cesium account for token
-
-4) Git Clone Project Airsim (recommend using the ProjectAirsim_modified branch in this repo so all the neccesary configs/builds already done. Otherwise do the interfacing yourself):
-
-
-5) Git clone main branch and place it in the same path as the Project Airsim cloned repo: 
-git clone https://github.com/Tanya3333333/DigitalTwin-world.git
-
-6) Install Python 3.12 and add to PATH
-
-7) Create a virtual environment (.venv) in VSCode and activate it everytime: 
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-8) Install pip:
-python -m pip install --upgrade pip 
-
-9) Install ProjectAirSim Python client in venv - it would automatically look for the project airsim repo cloned:
-pip install -e client/python/projectairsim
-
-10) Install all other dependecies (libraries/packages) related to this repo: 
-pip install -r requirements.txt
-
-11) Open unreal by clicking on Block.sln file in folder: 
-C:\Temp\ProjectAirSim\unreal\Blocks
-
-12) once Visual Studio 2022 opend, then Ctrl+F5 --> this will build and launch Unreal  (this is how to launch the Unreal everytime)
-Note: for the first time launch, go to Content Browser > Blocks > C++ Classes > Blocks > Public --> then drag and drop 'Actor_SetWorldOrigin' to the view port
-
-
-# How to run the Pipeline:
-
-1) Run PX4_SITL in Ubuntu OS (optional): 
-px4_sitl none_iris 
-
-2) Click Play (the green button) in Unreal in Windows OS
-
-3) Run the interceptor_phys repo in VS Code in Ubuntu OS (optional): 
-python -m sim.kernel.scheduler.scheduler_busy_Wait
-
-4) Once home position received in Unreal Output Log, then in Windows VS Code, run this repo: 
-py -m kernel.project_airsim_interface     
-

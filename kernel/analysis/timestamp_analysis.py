@@ -4,112 +4,126 @@ from pathlib import Path
 
 desktop = Path.home() / "Desktop"
 
-camera_log = desktop / "timestamp_camera_frame_publish_log.csv"
 logs = [
-    desktop / "timestamp_sim_execution_log.csv",
-    desktop / "timestamp_target_drone_pose_log.csv",
-    desktop / "timestamp_interceptor_pose_log.csv",
+    desktop / "realtime_ratio.csv",
+    desktop / "timestamp_loop_log.csv",
+    desktop / "timestamp_project_airsim_loop_log.csv",
+    desktop / "airsim_step_time.csv",
+    desktop / "set_pose.csv",
+    desktop / "pose_computation_time.csv",
+    desktop / "determinism.csv",
+    desktop / "wall_dt_camera.csv",
+    desktop / "PA_dt_camera.csv"
 ]
 
-expected_fps = 60
-expected_sim_step = 0.01
 
+def read_values(filepath):
+    values = []
 
-def read_timestamps(filepath):
-    timestamps = []
     with open(filepath, "r") as file:
         lines = file.readlines()
 
-        # skip header
-        for line in lines[1:]:
-            line = line.strip()
-            if line != "":
-                timestamps.append(float(line))
+    for line in lines[1:]:
+        line = line.strip()
+        if line != "":
+            values.append(float(line))
 
-    return timestamps
-
+    return values
 
 
+def calc_worst_error(dataset, expected_value):
+    data_min = np.min(dataset)
+    data_max = np.max(dataset)
 
-# ---------------- DT PLOTS ----------------
-for log in logs:
-    timestamps = read_timestamps(log)
+    max_error = abs((data_max - expected_value) / expected_value) * 100
+    min_error = abs((data_min - expected_value) / expected_value) * 100
+    worst_error = max(max_error, min_error)
 
-    dataset = []
-    num_samples = []
+    return max_error, min_error, worst_error
 
-    for i in range(1, len(timestamps)):
-        dt = timestamps[i] - timestamps[i - 1]
-        dataset.append(dt)
-        num_samples.append(i)
 
-    dt_min = np.min(dataset)
-    dt_max = np.max(dataset)
-    dt_mean = np.mean(dataset)
-    var = np.var(dataset)
+def analyze_csv(
+    filepath,
+    title=None,
+    ylabel="seconds",
+    expected_value=None,
+    expected_label=None
+):
+    if not filepath.exists():
+        print(f"Skipping missing file: {filepath}")
+        return
 
-    err_from_dt_max = abs((dt_max - expected_sim_step) / expected_sim_step)
-    err_from_dt_min = abs((dt_min - expected_sim_step) / expected_sim_step)
-    largest_err = 100 * np.max([err_from_dt_max, err_from_dt_min])
+    dataset = read_values(filepath)
 
-    plt.plot(num_samples, dataset, label="dt")
-    plt.subplots_adjust(bottom=0.3)  # makes extra room under x-axis
+    if len(dataset) == 0:
+        print(f"Skipping empty file: {filepath}")
+        return
+
+    samples = list(range(len(dataset)))
+
+    data_min = np.min(dataset)
+    data_max = np.max(dataset)
+    data_mean = np.mean(dataset)
+    data_std = np.std(dataset)
+    data_var = np.var(dataset)
+
+    if title is None:
+        title = filepath.stem.replace("_", " ").title()
+
+    stats_text = (
+        f"min = {data_min:.6f}\n"
+        f"max = {data_max:.6f}\n"
+        f"mean = {data_mean:.6f}\n"
+        f"std = {data_std:.6f}\n"
+        f"variance = {data_var:.9f}"
+    )
+
+    if expected_value is not None:
+        max_error, min_error, worst_error = calc_worst_error(dataset, expected_value)
+
+        if expected_label is None:
+            expected_label = str(expected_value)
+
+        stats_text += (
+            f"\nmax error from {expected_label} = {max_error:.2f}%"
+            f"\nmin error from {expected_label} = {min_error:.2f}%"
+            f"\nworst error from {expected_label} = {worst_error:.2f}%"
+        )
+
+    plt.figure()
+    plt.plot(samples, dataset, label=filepath.name)
+    plt.subplots_adjust(bottom=0.35)
+
     plt.figtext(
         0.98, 0.02,
-        f"min dt = {dt_min:.6f} s\n"
-        f"max dt = {dt_max:.6f} s\n"
-        f"mean dt = {dt_mean:.6f} s\n"
-        f"variance = {var:.6f} s^2\n"
-        f"error = {largest_err:.3f}%",
+        stats_text,
         ha="right",
         va="bottom"
     )
 
-    plt.title(log.name)
+    plt.title(title)
     plt.xlabel("sample")
-    plt.ylabel("dt (seconds)")
+    plt.ylabel(ylabel)
     plt.legend()
     plt.show()
 
 
+for log in logs:
+    if log.name == "realtime_ratio.csv":
+        analyze_csv(
+            log,
+            title="Realtime Ratio: sim_dt / wall_dt",
+            ylabel="ratio",
+            expected_value=1.0,
+            expected_label="1.0"
+        )
 
+    elif log.name in ["timestamp_loop_log.csv", "airsim_step_time.csv"]:
+        analyze_csv(
+            log,
+            expected_value=0.01,
+            expected_label="10ms"
+        )
 
-# ---------------- CAMERA FPS ----------------
-camera_timestamps = read_timestamps(camera_log)
-
-camera_fps_dataset = []
-num_samples_camera = []
-
-for i in range(1, len(camera_timestamps)):
-    dt_ns = camera_timestamps[i] - camera_timestamps[i - 1]
-    fps = 1e9 / dt_ns
-    camera_fps_dataset.append(fps)
-    num_samples_camera.append(i)
-
-fps_min = np.min(camera_fps_dataset)
-fps_max = np.max(camera_fps_dataset)
-fps_mean = np.mean(camera_fps_dataset)
-camera_var = np.var(camera_fps_dataset)
-
-camera_err_from_fps_max = abs((fps_max - expected_fps) / expected_fps)
-camera_err_from_fps_min = abs((fps_min - expected_fps) / expected_fps)
-camera_largest_err = 100 * np.max([camera_err_from_fps_max, camera_err_from_fps_min])
-
-plt.plot(num_samples_camera, camera_fps_dataset, label="Camera FPS")
-plt.subplots_adjust(bottom=0.3)  # makes extra room under x-axis
-
-plt.figtext(
-    0.98, 0.02,
-    f"min fps = {fps_min:.3f}\n"
-    f"max fps = {fps_max:.3f}\n"
-    f"mean fps = {fps_mean:.3f}\n"
-    f"variance = {camera_var:.3f}\n"
-    f"error = {camera_largest_err:.3f}%",
-    ha="right",
-    va="bottom"
-)
-plt.title("FPS for each frame")
-plt.xlabel("sample")
-plt.ylabel("fps (1/s)")
-plt.legend()
-plt.show()
+    else:
+        analyze_csv(log)

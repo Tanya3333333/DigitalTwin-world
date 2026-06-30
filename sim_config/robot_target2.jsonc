@@ -6,13 +6,15 @@
 
 
         "collision": {
-            "enabled": false
+            "enabled": true,
+            "restitution": 0.1,
+            "friction": 0.5
         },
 
         "visual": { 
             "geometry": {
                 "type": "unreal_mesh",
-                "name": "/Drone/SimpleHexarotor",
+                "name": "/Drone/AirTaxi/AirTaxi_Rotor",
                 "scale": "1.0 1.0 1.0"
             }
         }
